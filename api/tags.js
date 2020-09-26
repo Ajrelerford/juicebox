@@ -8,6 +8,7 @@ tagsRouter.get("/", async (req, res) => {
   res.send({
     tags,
   });
+  
 });
 
 tagsRouter.get("/:tagName/posts", async (req, res, next) => {
@@ -17,6 +18,9 @@ tagsRouter.get("/:tagName/posts", async (req, res, next) => {
     // use our method to get posts by tag name from the db
     // send out an object to the client { posts: // the posts }
     const posts = await getPostsByTagName(tagName);
+    posts = allPosts.filter(post => {
+      return post.active || (req.user && post.author.id === req.user.id);
+    });
     res.send({posts})
   } catch ({ name, message }) {
     // forward the name and message to the error handler
